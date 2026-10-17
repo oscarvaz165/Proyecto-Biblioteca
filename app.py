@@ -204,14 +204,12 @@ if opcion == INICIO:
 
     total = contar()
     disponibles = contar("disponible")
-    prestados = contar("prestado")
     bajas = contar("baja")
 
-    c1, c2, c3, c4 = st.columns(4)
+    c1, c2, c3 = st.columns(3)
     c1.metric("Total de ejemplares", total)
-    c2.metric("Disponibles", disponibles)
-    c3.metric("Prestados", prestados)
-    c4.metric("Dados de baja", bajas)
+    c2.metric("En el acervo", disponibles)
+    c3.metric("Dados de baja", bajas)
 
     st.write("")
     izq, der = st.columns(2)
@@ -219,8 +217,8 @@ if opcion == INICIO:
         st.markdown("#### Ejemplares por estado")
         datos = pd.DataFrame(
             {
-                "Estado": ["Disponibles", "Prestados", "Baja"],
-                "Ejemplares": [disponibles, prestados, bajas],
+                "Estado": ["En el acervo", "Dados de baja"],
+                "Ejemplares": [disponibles, bajas],
             }
         ).set_index("Estado")
         st.bar_chart(datos)
@@ -437,11 +435,6 @@ elif opcion == BAJA:
             st.warning("No se encontró ningún libro con ese número de adquisición.")
         elif libro["estado"] == "baja":
             st.info("Este libro ya está dado de baja.")
-        elif libro["estado"] == "prestado":
-            st.error(
-                "Este libro está prestado actualmente. "
-                "No se puede dar de baja hasta que se devuelva."
-            )
         else:
             st.write(f"**No. de adquisición:** {libro['no_adquisicion']}")
             st.write(f"**Título:** {libro['titulo']}")
@@ -472,7 +465,7 @@ elif opcion == CATALOGO:
         busqueda = st.text_input("Buscar por título, autor o No. de adquisición")
     with col2:
         filtro_estado = st.selectbox(
-            "Filtrar por estado", ["Todos", "disponible", "prestado", "baja"]
+            "Filtrar por estado", ["Todos", "disponible", "baja"]
         )
 
     libros = traer_libros(filtro_estado)
@@ -506,7 +499,7 @@ elif opcion == REPORTE:
 
     estado_reporte = st.selectbox(
         "¿Qué libros quieres incluir?",
-        ["baja", "disponible", "prestado", "Todos"],
+        ["baja", "disponible", "Todos"],
     )
 
     if st.button("Generar reporte"):
